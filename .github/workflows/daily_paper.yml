@@ -20,24 +20,13 @@ jobs:
       - name: Install System Ingredients
         run: |
           sudo apt-get update
-          sudo apt-get install -y \
-            build-essential \
-            python3-dev \
-            python3-pip \
-            python3-setuptools \
-            python3-wheel \
-            python3-cffi \
-            libcairo2 \
-            libpango-1.0-0 \
-            libpangocairo-1.0-0 \
-            libgdk-pixbuf2.0-0 \
-            libffi-dev \
-            shared-mime-info
+          sudo apt-get install -y build-essential python3-dev libcairo2 libpango-1.0-0 libpangocairo-1.0-0 libgdk-pixbuf2.0-0 libffi-dev shared-mime-info
 
-      - name: Install Goosepaper
+      - name: Install Goosepaper Directly
         run: |
           python -m pip install --upgrade pip
-          pip install goosepaper --break-system-packages
+          # This pulls the code directly from GitHub, skipping the broken "box"
+          pip install git+https://github.com/j6y3/goosepaper.git --break-system-packages
 
       - name: Generate and Upload Paper
         env:
