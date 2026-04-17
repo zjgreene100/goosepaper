@@ -17,25 +17,23 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: Install System Ingredients
+      - name: Install Ingredients
         run: |
           sudo apt-get update
           sudo apt-get install -y libpango-1.0-0 libpangocairo-1.0-0 libgdk-pixbuf2.0-0
-          # Install only the working dependencies
           pip install weasyprint goose3 requests rmapy==0.3.1 --break-system-packages
 
-      - name: Manual Engine Grab
+      - name: Build Local Engine
         run: |
-          # Use a direct clone to grab the code folder
-          git clone --depth 1 https://github.com/j6y3/goosepaper.git temp_engine
-          # Move the actual code into your main directory
-          mv temp_engine/goosepaper .
-          # Clean up the extra stuff
-          rm -rf temp_engine
+          # We are downloading the raw file directly to bypass the 'Username' gatekeeper
+          curl -s https://raw.githubusercontent.com/j6y3/goosepaper/main/goosepaper/cli.py -o goosepaper/cli.py
+          curl -s https://raw.githubusercontent.com/j6y3/goosepaper/main/goosepaper/goosepaper.py -o goosepaper/goosepaper.py
+          curl -s https://raw.githubusercontent.com/j6y3/goosepaper/main/goosepaper/__init__.py -o goosepaper/__init__.py
+          # Create a helper file so Python treats the folder as a module
+          touch goosepaper/__init__.py
 
       - name: Generate and Upload Paper
         env:
           REMARKABLE_AUTH_TOKEN: ${{ secrets.REMARKABLE_AUTH_TOKEN }}
         run: |
-          # Run the engine manually
           python3 -m goosepaper.cli --config config.json --output DailyPaper.pdf --upload
