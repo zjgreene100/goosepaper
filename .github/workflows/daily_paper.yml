@@ -23,18 +23,8 @@ jobs:
           sudo apt-get install -y libpango-1.0-0 libpangocairo-1.0-0 libgdk-pixbuf2.0-0
           pip install weasyprint goose3 requests rmapy==0.3.1 --break-system-packages
 
-      - name: Build Local Engine
-        run: |
-          mkdir -p goosepaper/util
-          curl -sL https://raw.githubusercontent.com/j6y3/goosepaper/main/goosepaper/cli.py -o goosepaper/cli.py
-          curl -sL https://raw.githubusercontent.com/j6y3/goosepaper/main/goosepaper/goosepaper.py -o goosepaper/goosepaper.py
-          curl -sL https://raw.githubusercontent.com/j6y3/goosepaper/main/goosepaper/__init__.py -o goosepaper/__init__.py
-          curl -sL https://raw.githubusercontent.com/j6y3/goosepaper/main/goosepaper/util/__init__.py -o goosepaper/util/__init__.py
-          curl -sL https://raw.githubusercontent.com/j6y3/goosepaper/main/goosepaper/util/fonts.py -o goosepaper/util/fonts.py
-
       - name: Generate and Upload Paper
         env:
           REMARKABLE_AUTH_TOKEN: ${{ secrets.REMARKABLE_AUTH_TOKEN }}
         run: |
-          export PYTHONPATH=$PYTHONPATH:.
           python3 goosepaper/cli.py --config config.json --output DailyPaper.pdf --upload
