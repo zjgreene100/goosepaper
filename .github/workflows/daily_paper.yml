@@ -17,16 +17,16 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: Install System Ingredients
+      - name: Install Essentials
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential python3-dev libcairo2 libpango-1.0-0 libpangocairo-1.0-0 libgdk-pixbuf2.0-0 libffi-dev shared-mime-info
+          sudo apt-get install -y libpango-1.0-0 libpangocairo-1.0-0 libgdk-pixbuf2.0-0
+          pip install weasyprint goose3 requests rmapy==0.1.1 --break-system-packages
 
-      - name: Install Goosepaper (Direct Version)
+      - name: Force Install Goosepaper
         run: |
-          python -m pip install --upgrade pip
-          # We are installing a version that bypasses the broken 'requirements.txt' issue
-          pip install goosepaper==0.6.0 --break-system-packages
+          # This pulls the code without using the broken installer
+          pip install --no-deps goosepaper --break-system-packages
 
       - name: Generate and Upload Paper
         env:
