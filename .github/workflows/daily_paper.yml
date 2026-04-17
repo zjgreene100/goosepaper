@@ -12,27 +12,26 @@ jobs:
       - name: Checkout your repo
         uses: actions/checkout@v4
 
-      - name: Checkout Goosepaper Engine
-        uses: actions/checkout@v4
-        with:
-          repository: j6y3/goosepaper
-          path: engine  # This puts the code in a folder named 'engine'
-
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.10'
 
-      - name: Install Ingredients
+      - name: Install System Ingredients
         run: |
           sudo apt-get update
           sudo apt-get install -y libpango-1.0-0 libpangocairo-1.0-0 libgdk-pixbuf2.0-0
+
+      - name: The "I'm Done With Errors" Install
+        run: |
+          # We manually install all the parts Goosepaper needs first
           pip install weasyprint goose3 requests rmapy==0.3.1 --break-system-packages
+          # We tell pip to grab Goosepaper but IGNORE the broken installer parts
+          pip install goosepaper --no-deps --break-system-packages
 
       - name: Generate and Upload Paper
         env:
           REMARKABLE_AUTH_TOKEN: ${{ secrets.REMARKABLE_AUTH_TOKEN }}
         run: |
-          # Point Python to the 'engine' folder we checked out
-          export PYTHONPATH=$PYTHONPATH:$(pwd)/engine
-          python3 -m goosepaper.cli --config config.json --output DailyPaper.pdf --upload
+          # We run the command directly
+          goosepaper --config config.json --output DailyPaper.pdf --upload
