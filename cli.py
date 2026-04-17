@@ -1,7 +1,11 @@
 import argparse
 import json
 import os
-from .goosepaper import Goosepaper
+import sys
+
+# Add current directory to path so it can find the other file
+sys.path.append(os.getcwd())
+from goosepaper.goosepaper import Goosepaper
 
 def main():
     parser = argparse.ArgumentParser()
@@ -14,20 +18,21 @@ def main():
         config = json.load(f)
 
     gp = Goosepaper(config)
-    print("Fetching articles...")
+    print("Starting news fetch...")
     articles = gp.fetch_articles()
     
+    if not articles:
+        print("No articles found. Check your config.json URLs.")
+        return
+
     print(f"Generating PDF: {args.output}")
     gp.create_pdf(articles, args.output)
 
     if args.upload:
         token = os.environ.get("REMARKABLE_AUTH_TOKEN")
-        if not token:
-            print("Error: REMARKABLE_AUTH_TOKEN not found in environment.")
-            return
-        print("Uploading to reMarkable...")
+        print("Attempting to upload to reMarkable...")
         gp.upload_to_remarkable(args.output, token)
-        print("Done!")
+        print("Success! Check your tablet.")
 
 if __name__ == "__main__":
     main()
