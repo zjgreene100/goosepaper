@@ -21,15 +21,19 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y libpango-1.0-0 libpangocairo-1.0-0 libgdk-pixbuf2.0-0
-          # We updated rmapy here to the newer version
+          # We install the ingredients, but NOT the broken goosepaper package
           pip install weasyprint goose3 requests rmapy==0.3.1 --break-system-packages
 
-      - name: Force Install Goosepaper
+      - name: Download Engine Manually
         run: |
-          pip install --no-deps goosepaper --break-system-packages
+          # We grab the raw folder from GitHub directly
+          curl -L https://github.com/j6y3/goosepaper/archive/refs/heads/main.zip -o engine.zip
+          unzip engine.zip
+          mv goosepaper-main/goosepaper .
 
       - name: Generate and Upload Paper
         env:
           REMARKABLE_AUTH_TOKEN: ${{ secrets.REMARKABLE_AUTH_TOKEN }}
         run: |
-          goosepaper --config config.json --output DailyPaper.pdf --upload
+          # We run the code directly from the folder we just downloaded
+          python3 -m goosepaper.cli --config config.json --output DailyPaper.pdf --upload
