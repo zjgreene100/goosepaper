@@ -1,0 +1,30 @@
+name: Daily Newspaper Delivery
+
+on:
+  schedule:
+    - cron: '0 13 * * *'  # 6:00 AM Arizona Time
+  workflow_dispatch:      # Lets you run it manually to test
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential python3-dev libpango-1.0-0 libpangocairo-1.0-0 libgdk-pixbuf2.0-0 libffi-dev shared-mime-info
+          pip install goosepaper
+
+      - name: Generate and Upload Paper
+        env:
+          REMARKABLE_AUTH_TOKEN: ${{ secrets.REMARKABLE_AUTH_TOKEN }}
+        run: |
+          goosepaper --config config.json --output DailyPaper.pdf --upload
