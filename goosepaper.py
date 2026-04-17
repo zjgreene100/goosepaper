@@ -1,5 +1,4 @@
 import os
-import re
 import requests
 from goose3 import Goose
 from weasyprint import HTML
@@ -14,15 +13,17 @@ class Goosepaper:
         g = Goose()
         for source in self.config.get("sources", []):
             try:
-                response = requests.get(source["url"], timeout=10)
+                print(f"Fetching {source['url']}...")
+                response = requests.get(source["url"], timeout=15)
                 article = g.extract(raw_html=response.text)
-                articles.append({"title": article.title, "content": article.cleaned_text})
+                if article.cleaned_text:
+                    articles.append({"title": article.title, "content": article.cleaned_text})
             except Exception as e:
-                print(f"Failed to fetch {source['url']}: {e}")
+                print(f"Failed to fetch: {e}")
         return articles
 
     def create_pdf(self, articles, output_file):
-        html_content = "<html><body><h1>Daily Paper</h1>"
+        html_content = "<html><style>body{font-family:serif;padding:2em;} h1{border-bottom:2px solid black;}</style><body><h1>Daily News</h1>"
         for art in articles:
             html_content += f"<h2>{art['title']}</h2><p>{art['content']}</p><hr>"
         html_content += "</body></html>"
