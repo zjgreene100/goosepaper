@@ -24,15 +24,14 @@ jobs:
 
       - name: Manual Setup
         run: |
-          rm -rf goosepaper
-          # Using the anonymous clone URL to avoid the username error
-          git clone https://github.com/j6y3/goosepaper.git .
+          # Download the engine into a separate folder named 'engine'
+          git clone https://github.com/j6y3/goosepaper.git engine
           pip install weasyprint goose3 requests rmapy==0.1.1 --break-system-packages
 
       - name: Generate and Upload Paper
         env:
           REMARKABLE_AUTH_TOKEN: ${{ secrets.REMARKABLE_AUTH_TOKEN }}
         run: |
-          # We are already in the folder now because of the '.' in the clone command
-          export PYTHONPATH=$PYTHONPATH:.
+          # Tell Python to look in the 'engine' folder for the code
+          export PYTHONPATH=$PYTHONPATH:$(pwd)/engine
           python3 -m goosepaper.cli --config config.json --output DailyPaper.pdf --upload
