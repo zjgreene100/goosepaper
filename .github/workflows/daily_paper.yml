@@ -24,14 +24,15 @@ jobs:
 
       - name: Manual Setup
         run: |
-          # Download the engine into a separate folder named 'engine'
-          git clone https://github.com/j6y3/goosepaper.git engine
+          # Download the engine code as a ZIP file to bypass the login error
+          curl -L https://github.com/j6y3/goosepaper/archive/refs/heads/main.zip -o engine.zip
+          unzip engine.zip
+          mv goosepaper-main engine
           pip install weasyprint goose3 requests rmapy==0.1.1 --break-system-packages
 
       - name: Generate and Upload Paper
         env:
           REMARKABLE_AUTH_TOKEN: ${{ secrets.REMARKABLE_AUTH_TOKEN }}
         run: |
-          # Tell Python to look in the 'engine' folder for the code
           export PYTHONPATH=$PYTHONPATH:$(pwd)/engine
           python3 -m goosepaper.cli --config config.json --output DailyPaper.pdf --upload
