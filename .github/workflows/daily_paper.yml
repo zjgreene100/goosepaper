@@ -24,10 +24,8 @@ jobs:
 
       - name: Manual Setup
         run: |
-          # Download the engine code as a ZIP file to bypass the login error
-          curl -L https://github.com/j6y3/goosepaper/archive/refs/heads/main.zip -o engine.zip
-          unzip engine.zip
-          mv goosepaper-main engine
+          # Use your new 'Key' to clone the engine properly
+          git clone https://${{ secrets.GH_PAT }}@github.com/j6y3/goosepaper.git engine
           pip install weasyprint goose3 requests rmapy==0.1.1 --break-system-packages
 
       - name: Generate and Upload Paper
