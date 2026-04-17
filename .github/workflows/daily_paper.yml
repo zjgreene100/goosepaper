@@ -9,31 +9,30 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
+      - name: Checkout your repo
         uses: actions/checkout@v4
+
+      - name: Checkout Goosepaper Engine
+        uses: actions/checkout@v4
+        with:
+          repository: j6y3/goosepaper
+          path: engine  # This puts the code in a folder named 'engine'
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.10'
 
-      - name: Install Essentials
+      - name: Install Ingredients
         run: |
           sudo apt-get update
           sudo apt-get install -y libpango-1.0-0 libpangocairo-1.0-0 libgdk-pixbuf2.0-0
-          # We install the ingredients, but NOT the broken goosepaper package
           pip install weasyprint goose3 requests rmapy==0.3.1 --break-system-packages
-
-      - name: Download Engine Manually
-        run: |
-          # We grab the raw folder from GitHub directly
-          curl -L https://github.com/j6y3/goosepaper/archive/refs/heads/main.zip -o engine.zip
-          unzip engine.zip
-          mv goosepaper-main/goosepaper .
 
       - name: Generate and Upload Paper
         env:
           REMARKABLE_AUTH_TOKEN: ${{ secrets.REMARKABLE_AUTH_TOKEN }}
         run: |
-          # We run the code directly from the folder we just downloaded
+          # Point Python to the 'engine' folder we checked out
+          export PYTHONPATH=$PYTHONPATH:$(pwd)/engine
           python3 -m goosepaper.cli --config config.json --output DailyPaper.pdf --upload
