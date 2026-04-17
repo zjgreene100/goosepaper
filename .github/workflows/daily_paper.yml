@@ -17,7 +17,7 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: Install Ingredients
+      - name: Install System Ingredients
         run: |
           sudo apt-get update
           sudo apt-get install -y libpango-1.0-0 libpangocairo-1.0-0 libgdk-pixbuf2.0-0
@@ -25,15 +25,16 @@ jobs:
 
       - name: Build Local Engine
         run: |
-          # We are downloading the raw file directly to bypass the 'Username' gatekeeper
-          curl -s https://raw.githubusercontent.com/j6y3/goosepaper/main/goosepaper/cli.py -o goosepaper/cli.py
-          curl -s https://raw.githubusercontent.com/j6y3/goosepaper/main/goosepaper/goosepaper.py -o goosepaper/goosepaper.py
-          curl -s https://raw.githubusercontent.com/j6y3/goosepaper/main/goosepaper/__init__.py -o goosepaper/__init__.py
-          # Create a helper file so Python treats the folder as a module
-          touch goosepaper/__init__.py
+          mkdir -p goosepaper/util
+          curl -sL https://raw.githubusercontent.com/j6y3/goosepaper/main/goosepaper/cli.py -o goosepaper/cli.py
+          curl -sL https://raw.githubusercontent.com/j6y3/goosepaper/main/goosepaper/goosepaper.py -o goosepaper/goosepaper.py
+          curl -sL https://raw.githubusercontent.com/j6y3/goosepaper/main/goosepaper/__init__.py -o goosepaper/__init__.py
+          curl -sL https://raw.githubusercontent.com/j6y3/goosepaper/main/goosepaper/util/__init__.py -o goosepaper/util/__init__.py
+          curl -sL https://raw.githubusercontent.com/j6y3/goosepaper/main/goosepaper/util/fonts.py -o goosepaper/util/fonts.py
 
       - name: Generate and Upload Paper
         env:
           REMARKABLE_AUTH_TOKEN: ${{ secrets.REMARKABLE_AUTH_TOKEN }}
         run: |
-          python3 -m goosepaper.cli --config config.json --output DailyPaper.pdf --upload
+          export PYTHONPATH=$PYTHONPATH:.
+          python3 goosepaper/cli.py --config config.json --output DailyPaper.pdf --upload
