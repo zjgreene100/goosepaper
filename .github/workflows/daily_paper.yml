@@ -24,17 +24,15 @@ jobs:
 
       - name: Manual Setup
         run: |
-          # Remove any old folders so we don't get Error 128
           rm -rf goosepaper
-          git clone https://github.com/j6y3/goosepaper.git
-          cd goosepaper
-          # Manually install the core parts the developer missed
+          # Using the anonymous clone URL to avoid the username error
+          git clone https://github.com/j6y3/goosepaper.git .
           pip install weasyprint goose3 requests rmapy==0.1.1 --break-system-packages
 
       - name: Generate and Upload Paper
         env:
           REMARKABLE_AUTH_TOKEN: ${{ secrets.REMARKABLE_AUTH_TOKEN }}
         run: |
-          # Tell Python where the goosepaper folder is
-          export PYTHONPATH=$PYTHONPATH:$(pwd)/goosepaper
+          # We are already in the folder now because of the '.' in the clone command
+          export PYTHONPATH=$PYTHONPATH:.
           python3 -m goosepaper.cli --config config.json --output DailyPaper.pdf --upload
