@@ -1,0 +1,22 @@
+{
+  "filename": "DailyPaper.pdf",
+  "providers": [
+    {
+      "provider": "rss",
+      "config": {
+        "feeds": [
+          "https://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml",
+          "https://rss.nytimes.com/services/xml/rss/nyt/MostViewed.xml",
+          "https://rss.nytimes.com/services/xml/rss/nyt/Technology.xml"
+        ],
+        "limit": 15
+      }
+    },
+    {
+      "provider": "weather",
+      "config": {
+        "location": "Phoenix, AZ"
+      }
+    }
+  ]
+}
