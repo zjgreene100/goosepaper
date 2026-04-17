@@ -9,7 +9,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout your repo
+      - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Set up Python
@@ -22,15 +22,14 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y build-essential python3-dev libcairo2 libpango-1.0-0 libpangocairo-1.0-0 libgdk-pixbuf2.0-0 libffi-dev shared-mime-info
 
-      - name: Manual Setup
+      - name: Install Goosepaper (Direct Version)
         run: |
-          # Use your new 'Key' to clone the engine properly
-          git clone https://${{ secrets.GH_PAT }}@github.com/j6y3/goosepaper.git engine
-          pip install weasyprint goose3 requests rmapy==0.1.1 --break-system-packages
+          python -m pip install --upgrade pip
+          # We are installing a version that bypasses the broken 'requirements.txt' issue
+          pip install goosepaper==0.6.0 --break-system-packages
 
       - name: Generate and Upload Paper
         env:
           REMARKABLE_AUTH_TOKEN: ${{ secrets.REMARKABLE_AUTH_TOKEN }}
         run: |
-          export PYTHONPATH=$PYTHONPATH:$(pwd)/engine
-          python3 -m goosepaper.cli --config config.json --output DailyPaper.pdf --upload
+          goosepaper --config config.json --output DailyPaper.pdf --upload
