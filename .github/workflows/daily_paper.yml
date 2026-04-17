@@ -21,11 +21,11 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y libpango-1.0-0 libpangocairo-1.0-0 libgdk-pixbuf2.0-0
-          pip install weasyprint goose3 requests rmapy==0.1.1 --break-system-packages
+          # We updated rmapy here to the newer version
+          pip install weasyprint goose3 requests rmapy==0.3.1 --break-system-packages
 
       - name: Force Install Goosepaper
         run: |
-          # This pulls the code without using the broken installer
           pip install --no-deps goosepaper --break-system-packages
 
       - name: Generate and Upload Paper
